@@ -9,6 +9,8 @@ It's made using love2d.
 
 # licenses
 [yata](https://github.com/WIITD/jata) --> [link](https://github.com/WIITD/yata/blob/main/LICENSE)
+
 [savedata](https://github.com/BroccoliRaab/SaveData) --> [link](https://github.com/BroccoliRaab/SaveData/blob/master/LICENSE)
+
 [love2d](https://github.com/love2d/love) --> [link](https://github.com/love2d/love/blob/master/license.txt)
 

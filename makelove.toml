@@ -1,6 +1,7 @@
 name = "yata"
 default_targets = ["win32", "win64", "appimage"]
 build_directory = "build"
+icon_file = "res/icon.png"
 
 love_files = [
     "::git-ls-tree::",
