@@ -1,6 +1,5 @@
 # yata
-yata or "yet another todo app" is as a name suggest todo app.
-It's made using love2d.
+yata or yet another todo app is, as a name suggest, an application for writing todo lists
 
 # features
 #### saving/loading files
