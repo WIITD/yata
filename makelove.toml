@@ -9,3 +9,7 @@ love_files = [
     "::git-ls-tree::",
     "-*/.*",
 ]
+
+[linux.desktop_file_metadata]
+Comment="yet another todo list"
+Categories="Development;Office"

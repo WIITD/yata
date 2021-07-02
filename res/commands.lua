@@ -5,11 +5,11 @@ require("res/theme")
 function commands()
   local words = {}
   if _u_input == "" then return end
-  if #_todo_table >= 18 then return end
   for word in _u_input:gmatch("%w+") do table.insert(words, word) end
 
   -- ----------ADD----------
   if words[1] == "add" then
+    if #_todo_table >= 18 then _u_input = "" return end
     local str = _u_input:gsub("add ", "")
     mem()
     table.insert(_todo_table, str)
@@ -77,19 +77,21 @@ function commands()
     mem()
     _todo_table = {}
     if words[2] == nil then
-      table.insert(_todo_table, "> add              (add entry)")
-      table.insert(_todo_table, "> rm               (remove entry)")
-      table.insert(_todo_table, "> edit             (edit entry)")
-      table.insert(_todo_table, "> rep              (edit word)")
-      table.insert(_todo_table, "> sep              (insert separator)")
-      table.insert(_todo_table, "> save             (save current list)")
-      table.insert(_todo_table, "> load             (load list)")
-      table.insert(_todo_table, "> copy             (copy entry to copyboard)")
-      table.insert(_todo_table, "> undo             (undo last action)")
-      table.insert(_todo_table, "> theme            (change app theme)")
-      table.insert(_todo_table, "> clear            (clear list)")
-      table.insert(_todo_table, "> quit             (quit from app)")
-      table.insert(_todo_table, "> help             (display commands list)")
+      table.insert(_todo_table, "> add               (add entry)")
+      table.insert(_todo_table, "> rm                (remove entry)")
+      table.insert(_todo_table, "> edit              (edit entry)")
+      table.insert(_todo_table, "> rep               (edit word)")
+      table.insert(_todo_table, "> sep               (insert separator)")
+      table.insert(_todo_table, "> image             (save image of current list)")
+      table.insert(_todo_table, "> save              (save current list)")
+      table.insert(_todo_table, "> load              (load list)")
+      table.insert(_todo_table, "> copy              (copy entry to copyboard)")
+      table.insert(_todo_table, "> undo              (undo last action)")
+      table.insert(_todo_table, "> theme             (change app theme)")
+      table.insert(_todo_table, "> clear             (clear list)")
+      table.insert(_todo_table, "> dir               (open save directory)")
+      table.insert(_todo_table, "> quit              (quit from app)")
+      table.insert(_todo_table, "> help              (display commands list)")
       _g_input = "type 'help command' for more info"
 
     elseif words[2] == "add" then
@@ -124,6 +126,14 @@ function commands()
       table.insert(_todo_table, "'sep' will add separator as a next entry")
       _g_input = "enter 'clear' to clear the list"
 
+    elseif words[2] == "image" then
+      table.insert(_todo_table, "'image' allows you to save image of the list")
+      table.insert(_todo_table, ">    image |or| image name")
+      table.insert(_todo_table, "image will be saved to app save directory")
+      table.insert(_todo_table, "which on your device is:")
+      table.insert(_todo_table, "'".._app.dir.."'")
+      _g_input = "enter 'clear' to clear the list"
+
     elseif words[2] == "save" then
       table.insert(_todo_table, "'save' allows you to save list for example:")
       table.insert(_todo_table, ">    save test")
@@ -152,6 +162,10 @@ function commands()
       table.insert(_todo_table, "'clear' clears curren list")
       _g_input = "enter 'clear' to clear the list"
 
+     elseif words[2] == "dir" then
+      table.insert(_todo_table, "'dir' opens save directory")
+      table.insert(_todo_table, "'".._app.dir.."'")
+      _g_input = "enter 'clear' to clear the list"
 
     elseif words[2] == "quit" then
       table.insert(_todo_table, "'quit' quits from the app")
@@ -159,7 +173,13 @@ function commands()
 
     elseif words[2] == "theme" then
       table.insert(_todo_table, "'theme' allows you to change the theme")
-      table.insert(_todo_table, "themes: eclipse, ice, nord")
+      table.insert(_todo_table, "built-in themes: eclipse, ice, nord")
+      table.insert(_todo_table, "")
+      table.insert(_todo_table, "custom theme can be also created by:")
+      table.insert(_todo_table, ">     theme custom 'name'")
+      table.insert(_todo_table, "to edit theme type 'dir' to open save directory")
+      table.insert(_todo_table, "and edit file 'name'.yatf")
+      table.insert(_todo_table, "colors are rgb values divided by 255")
       _g_input = "enter 'clear' to clear the list"
 
     elseif words[2] == "help" then
@@ -173,9 +193,22 @@ function commands()
     end
   -- ----------SEP----------
     elseif  words[1] == "sep" then
+      if #_todo_table >= 18 then _u_input = "" return end
       mem()
       table.insert(_todo_table, "---------------------------------------------")
       _g_input = "separator inserted"
+
+  -- ----------IMAGE----------
+  elseif  words[1] == "image" then
+    if words[2] == nil then
+      _u_input = ""
+      love.graphics.captureScreenshot("image.png")
+      _g_input = "image saved"
+      return
+    end
+    _u_input = ""
+    love.graphics.captureScreenshot(words[2]..".png")
+    _g_input = "image saved"
 
   -- ----------SAVE----------
   elseif  words[1] == "save" then
@@ -222,15 +255,24 @@ function commands()
   -- ----------THEME----------
   elseif  words[1] == "theme" then
     if words[2] == nil then _u_input = "" _g_input = "themes: eclipse, ice, nord" return end
-    if words[2] == "eclipse" then _app.theme = theme_eclipse()
+    if words[2] == "custom" then theme_save(words[3])
+    elseif words[2] == "eclipse" then _app.theme = theme_eclipse()
     elseif words[2] == "ice" then _app.theme = theme_ice()
     elseif words[2] == "nord" then _app.theme = theme_nord()
-    else _u_input = "" _g_input = "theme not found" return end
-    _g_input = "theme changed"
+    else
+      local theme = theme_load(words[2])
+      if theme == nil then return end
+      _app.theme = theme
+    end
 
   -- ----------QUIT----------
   elseif  words[1] == "quit" then
     love.event.quit()
+
+  -- ----------DIR----------
+  elseif  words[1] == "dir" then
+    love.system.openURL("file://".._app.dir)
+    _g_input = "save directory opened"
 
   -- ----------CLEAR----------
   elseif  words[1] == "clear" then
@@ -244,9 +286,9 @@ end
 -- ----------PASTE FROM CLIPBOARD----------
 function paste()
   local str = _u_input..love.system.getClipboardText()
-  if #str > 40 then
+  if #str > 52 then
     _u_input = ""
-    _g_input = "cannot past more then 40 chars + command"
+    _g_input = "cannot past more then 52 chars + command"
     return
   end
   _u_input = _u_input..love.system.getClipboardText()
@@ -259,4 +301,3 @@ function mem()
     _mem[i] = _todo_table[i]
   end
 end
-
