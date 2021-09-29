@@ -1,31 +1,43 @@
 local sd = require("res/savedata")
 
 function theme_eclipse()
-  local theme= {}
-  theme.bg = {0.15,0.15,0.16}
-  theme.fg = {0.20,0.20,0.22}
-  theme.tx = {0.38,0.38,0.44}
-  theme.cm = {0.68,0.28,0.44}
+  local theme= {
+    {0.15,0.15,0.16}, -- bg
+    {0.20,0.20,0.22}, -- input bat
+    {0.38,0.38,0.44}, -- text
+    {0.68,0.28,0.44}, -- info text on input bar
+    {0.47,0.75,0.18}, -- done
+    {0.75,0.18,0.27}, -- fix
+    {0.93,0.87,0.16}, -- important
+  }
   _g_input = "theme changed"
   return theme
 end
 
 function theme_ice()
-  local theme= {}
-  theme.bg = {0.91,0.91,1.00}
-  theme.fg = {0.82,0.82,1.00}
-  theme.tx = {0.50,0.50,1.00}
-  theme.cm = {0.64,0.64,0.86}
+  local theme= {
+    {0.91,0.91,1.00},
+    {0.82,0.82,1.00},
+    {0.50,0.50,1.00},
+    {0.64,0.64,0.86},
+    {0.59,0.88,0.30},
+    {0.95,0.43,0.51},
+    {0.96,0.98,0.34},
+  }
   _g_input = "theme changed"
   return theme
 end
 
 function theme_nord()
-  local theme= {}
-  theme.bg = {0.18,0.20,0.25}
-  theme.fg = {0.23,0.26,0.32}
-  theme.tx = {0.72,0.75,0.78}
-  theme.cm = {0.40,0.45,0.53}
+  local theme= {
+    {0.18,0.20,0.25},
+    {0.23,0.26,0.32},
+    {0.72,0.75,0.78},
+    {0.40,0.45,0.53},
+    {0.63,0.74,0.54},
+    {0.74,0.38,0.41},
+    {0.92,0.79,0.54},
+  }
   _g_input = "theme changed"
   return theme
 end
@@ -40,26 +52,13 @@ function theme_load(name)
   end
   local theme = sd.load(name..".yatf")
 
-  for i = 1, 3 do
-    if type(theme.bg[i]) ~= "number" then
-      _u_input = ""
-      _g_input = "error while loading background color"
-      return
-
-    elseif type(theme.fg[i]) ~= "number" then
-      _u_input = ""
-      _g_input = "error while loading foreground color"
-      return
-
-    elseif type(theme.tx[i]) ~= "number" then
-      _u_input = ""
-      _g_input = "error while loading text color"
-      return
-
-    elseif type(theme.cm[i]) ~= "number" then
-      _u_input = ""
-      _g_input = "error while loading commnets color"
-      return
+  for i = 1, 7 do
+    for j = 1, 3 do
+      if type(theme[i][j]) ~= "number" then
+        _u_input = ""
+        _g_input = "error while loading one of the colors"
+        return
+      end
     end
   end
 
@@ -68,11 +67,7 @@ function theme_load(name)
 end
 
 function theme_save(name)
-  if name == nil then
-    _u_input = ""
-    _g_input = "theme name not defined"
-  end
-  if name == " " then
+  if name == nil or name == " " then
     _u_input = ""
     _g_input = "theme name not defined"
   end
@@ -95,16 +90,12 @@ function config_theme()
     sd.save(theme_eclipse(), "theme.yacf")
   end
   local theme = sd.load("theme.yacf")
-
-  for i = 1, 3 do
-    if type(theme.bg[i]) ~= "number" then
-      return
-    elseif type(theme.fg[i]) ~= "number" then
-      return
-    elseif type(theme.tx[i]) ~= "number" then
-      return
-    elseif type(theme.cm[i]) ~= "number" then
-      return
+  for i = 1, 7 do
+    for j = 1, 3 do
+      if type(theme[i][j]) ~= "number" then
+        print("error: theme"..theme[j].." "..theme[i][j])
+        return
+      end
     end
   end
 

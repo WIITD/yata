@@ -1,7 +1,7 @@
 name = "yata"
-default_targets = ["win32", "win64", "appimage"]
+default_targets = ["win32", "win64", "appimage", "lovejs"]
 build_directory = "build"
-icon_file = "res/icon.png"
+icon_file = "icon.png"
 
 love_files = [
     "+*",
@@ -9,6 +9,10 @@ love_files = [
     "::git-ls-tree::",
     "-*/.*",
 ]
+
+[archive_files]
+"README.md" = "README.md"
+"LICENSE" = "LICENSE"
 
 [linux.desktop_file_metadata]
 Comment="yet another todo list"

@@ -37,7 +37,7 @@ quit             (quit from app)
 help             (display commands list)  
 
 # licenses
-[yata](https://github.com/WIITD/jata) --> [link](https://github.com/WIITD/yata/blob/main/LICENSE)  
+[yata](https://github.com/WIITD/yata) --> [link](https://github.com/WIITD/yata/blob/main/LICENSE)  
 
 [savedata](https://github.com/BroccoliRaab/SaveData) --> [link](https://github.com/BroccoliRaab/SaveData/blob/master/LICENSE)  
 
