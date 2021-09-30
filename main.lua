@@ -17,9 +17,12 @@ function love.load(args)
   _app.dir = love.filesystem.getSaveDirectory()
   _app.theme = config_theme() or theme_eclipse()
   _app.index = false
-  _app.pages = {0}
+  _app.pages = {{0}, {1}}
   for i = 2, 5 do
-    _app.pages[i] = -542 * (i-1)
+    _app.pages[1][i] = -540 * (i-1)
+  end
+  for i = 2, 5 do
+    _app.pages[2][i] = (18 * (i-1)) + 1
   end
   _app.page_sel = 1
 
@@ -62,33 +65,33 @@ function love.draw()
     love.graphics.rectangle("fill", 0, 0, 22, _app.h)
   end
   if _app.index then
-    for i = 1, 18*_app.page_sel do
+    for i = _app.pages[2][_app.page_sel], 18*_app.page_sel do
       if i > #_todo_table then break end
       love.graphics.setColor(_app.theme[4])
-      love.graphics.print(i, _i_font, 1, _app.pages[_app.page_sel]+(-18+(i*30)), 0)
+      love.graphics.print(i, _i_font, 1, _app.pages[1][_app.page_sel]+(-18+(i*30)), 0)
 
       if _todo_table[i][2] > 0 and _todo_table[i][2] <= 3 then
         love.graphics.setColor(_app.theme[_todo_table[i][2]+4])
       else
         love.graphics.setColor(_app.theme[3])
       end
-      love.graphics.print(_todo_table[i][1] or "", _l_font, 23, _app.pages[_app.page_sel]+(-25+(i*30)), 0)
+      love.graphics.print(_todo_table[i][1] or "", _l_font, 23, _app.pages[1][_app.page_sel]+(-25+(i*30)), 0)
     end
   else
-    for i = 1, 18*_app.page_sel do
+    for i = _app.pages[2][_app.page_sel], 18*_app.page_sel do
       if i > #_todo_table then break end
       if _todo_table[i][2] > 0 and _todo_table[i][2] <= 3 then
         love.graphics.setColor(_app.theme[_todo_table[i][2]+4])
       else
         love.graphics.setColor(_app.theme[3])
       end
-      love.graphics.print(_todo_table[i][1] or "", _l_font, 15, _app.pages[_app.page_sel]+(-25+(i*30)), 0)
+      love.graphics.print(_todo_table[i][1] or "", _l_font, 15, _app.pages[1][_app.page_sel]+(-25+(i*30)), 0)
     end
   end
 
   love.graphics.setColor(_app.theme[2])
   love.graphics.rectangle("fill", 0, _app.h-40, _app.w, _app.h)
-  love.graphics.rectangle("line", 0, 0, _app.w, _app.h)
+  love.graphics.rectangle("line", 1, 1, _app.w-1, _app.h-1)
   if _u_input == "" and _g_input ~= "" then
     love.graphics.setColor(_app.theme[4])
     love.graphics.print(">> ".._g_input, _u_font, 5, _app.h-35, 0)
@@ -127,6 +130,11 @@ function love.keypressed(key)
 
   if love.keyboard.isDown("lctrl")  and key == "v" then
     paste()
+  end
+
+  if love.keyboard.isDown("f11") then
+    local fscr = love.window.getFullscreen()
+    love.window.setFullscreen(not fscr)
   end
 
   print("KEY >> "..key)

@@ -1,15 +1,27 @@
   -- #HELP
 cmd:add("help",
   function(c)
+    if c[2] == "debug" then
+      local str = ""
+      for cm=1, #cmd do
+        str = str..cmd[cm][3].."\n"
+      end
+      love.filesystem.write("debug_help.txt", str)
+      _g_input = "debug help list saved"
+      return
+    end
+
     if c[2] == nil then
       _u_input = ""
-      _g_input = "type 'help command' for more info"
+      _g_input = "type 'help 'command'' for more info"
       cmds = ""
       for i=1, #cmd do
         if type(cmd[i][1]) == "table" then
+          cmds = cmds.."{ "
           for w=1, #cmd[i][1] do
-            cmds = cmds..cmd[i][1][w].."|"
+            cmds = cmds..cmd[i][1][w].." "
           end
+          cmds = cmds.."}|"
         else
           cmds = cmds..cmd[i][1].."|"
         end
@@ -20,14 +32,15 @@ cmd:add("help",
       love.window.showMessageBox("yata: help", cmds, "info", false)
       return
     end
+    
     local command = c[2]
-    for c=1, #cmd do
-      if type(cmd[c][1]) == "table" then
-        for w=1, #cmd[c][1] do
-          if cmd[c][1][w] == command then _g_input = cmd[c][3] end
+    for cm=1, #cmd do
+      if type(cmd[cm][1]) == "table" then
+        for w=1, #cmd[cm][1] do
+          if cmd[cm][1][w] == command then _g_input = cmd[cm][3] end
         end
       else
-        if cmd[c][1] == command then _g_input = cmd[c][3] end
+        if cmd[cm][1] == command then _g_input = cmd[cm][3] end
       end
     end
   end,
@@ -101,7 +114,7 @@ cmd:add({"edi", "edit"},
     _todo_table[num_index][1] = str
     _g_input = "index "..num_index.." edited"
   end,
-  "> edi/edit 'index new' -> (edit entry)"
+  "> edi/edit 'index' 'new' -> (edit entry)"
 )
   
   -- #REP
@@ -133,7 +146,7 @@ cmd:add({"rep", "replace"},
     _todo_table[num_index][1] = str_entry
     _g_input = "word from index "..num_index.." replaced"
   end,
-  "> rep/replace 'index old new' -> (edit word)"
+  "> rep/replace 'index' 'old' 'new' -> (edit word)"
 )
   
   -- #SEP
@@ -148,7 +161,7 @@ cmd:add({"rep", "replace"},
 )
 
   -- #STATE
- cmd:add({"state", "st"},
+ cmd:add({"st", "status"},
   function(c)
     if tonumber(c[2]) == nil or _todo_table[tonumber(c[2])] == nil then
       _u_input = ""
@@ -164,7 +177,7 @@ cmd:add({"rep", "replace"},
     _todo_table[tonumber(c[2])][2] = tonumber(c[3])
     _g_input = "state of index "..c[2].." changed"
   end,
-  "> st/status '0-3 -> (change entry state/color)"
+  "> st/status 'number 0-3' -> (change entry state/color)"
 )
   
   -- #EXPORT
@@ -210,7 +223,7 @@ cmd:add("export",
       _g_input = "export type not found"
     end
   end,
-  "> export 'image/text name' -> (export list)"
+  "> export 'image/text' 'name' -> (export list)"
 )
   
   -- #SAVE
@@ -280,10 +293,15 @@ cmd:add({"back", "undo"},
   -- #THEME
 cmd:add("theme",
   function(c)
-    if c[2] == nil then _u_input = "" _g_input = "themes: eclipse, ice, nord" return end
-    if c[2] == "custom" then theme_save(c[3])
+    if c[2] == nil then _u_input = "" _g_input = "themes: eclipse, snow, nord, custom" return end
+    if c[2] == "custom" then 
+      if c[3] == nil then
+        _g_input = "invalid name"
+        return
+      end
+      theme_save(c[3])
     elseif c[2] == "eclipse" then _app.theme = theme_eclipse()
-    elseif c[2] == "ice" then _app.theme = theme_ice()
+    elseif c[2] == "snow" then _app.theme = theme_snow()
     elseif c[2] == "nord" then _app.theme = theme_nord()
     else
       local theme = theme_load(c[2])
@@ -324,7 +342,7 @@ cmd:add("index",
 cmd:add({"p", "page"},
   function(c)
     local page = tonumber(c[2])
-    if page == nil or page < 1 or page > #_app.pages then
+    if page == nil or page < 1 or page > #_app.pages[1] then
       _g_input = "invalid page"
       return
     end
@@ -332,6 +350,15 @@ cmd:add({"p", "page"},
     _g_input = "page changed"
   end,
   "> p/page 'number 1-5' -> (change page)"
+)
+
+  -- #FULLSCREEN
+cmd:add("fullscreen",
+  function(c)
+    local fscr = love.window.getFullscreen()
+    love.window.setFullscreen(not fscr)
+  end,
+  "> fullscreen -> (toggle fullscreen)"
 )
 
   -- #CLS
